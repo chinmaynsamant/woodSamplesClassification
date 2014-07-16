@@ -15,7 +15,7 @@ conf.experiment  = generateExperimentConfiguration(testName);
 conf.experiment  = computeExperimentIds(conf.experiment);
 
 function experimentConf = computeExperimentIds(experimentConf)
-hashOptions = struct('Method','SHA-512','Format', 'hex', 'Input', 'array');
+hashOptions = struct('Method','MD5','Format', 'hex', 'Input', 'array');
 for ii=1:length(experimentConf)
     experimentConf(ii).featureList = sort(experimentConf(ii).featureList);
     experimentConf(ii).id = DataHash(experimentConf(ii),hashOptions);
@@ -25,7 +25,7 @@ end
 
 function dataConf = computeDataIds(dataConf)
 % Compute image Ids
-hashOptions = struct('Method','SHA-512','Format', 'hex', 'Input', 'array');
+hashOptions = struct('Method','MD5','Format', 'hex', 'Input', 'array');
 numSampleTypes = length(dataConf.sampleTypes);
 imageHashID = cell(1,numSampleTypes);
 for typeIdx = 1:numSampleTypes
@@ -38,7 +38,7 @@ dataConf.datasetID = DataHash(cellfun(@sort,imageHashID,'UniformOutput',false),h
 
 
 function dataConf = generateDataConfiguration(testName)
-datasetRootDir = 'D:\MatlabWorkspace\woodSamplesClassification\datasets\';
+datasetRootDir = 'C:\Github\woodSamplesClassification\datasets\';
 % Root Directory changed
 missingConfiguration = false;
 switch testName
