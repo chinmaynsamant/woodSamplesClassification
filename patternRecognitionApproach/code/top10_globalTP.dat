@@ -1,0 +1,20 @@
+-----------
+glcm nLevels:016 dist:009 angle: 30 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:016 dist:012 angle: 30 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:016 dist:014 angle: 30 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:016 dist:016 angle: 80 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:032 dist:009 angle: 30 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:032 dist:010 angle: 30 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:064 dist:010 angle: 30 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:064 dist:011 angle: 30 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:064 dist:020 angle: 40 stats:Correlation Energy Homogeneity contrast
+-----------
+glcm nLevels:016 dist:005 angle: 90 stats:Correlation Energy Homogeneity contrast
