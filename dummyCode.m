@@ -65,8 +65,8 @@ end
 
 %% Generate a random balanced dataset for the images in 1004Crop directori
 
-imagesDir = 'C:\Github\woodSamplesClassification\images\1004Crop\imAdjust\';
-outDir = 'C:\Github\woodSamplesClassification\datasets\1004BalancedRandomDataset\';
+imagesDir = 'C:\Users\Chinmay Samant\Documents\GitHub\woodSamplesClassification\images\1004Crop\imAdjust';
+outDir = 'C:\Users\Chinmay Samant\Documents\GitHub\woodSamplesClassification\datasets\1004BalancedRandomDataset';
 nSamplesDesired = 20;
 
 sampleType = {'TF', 'F', 'M', 'GG'};

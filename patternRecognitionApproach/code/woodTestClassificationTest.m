@@ -1,6 +1,6 @@
 function woodTestClassificationTest(conf)
 %
-% TODO: 
+% TODO:
 %       - modify featureDescription2struct so that form the initial configuration
 %       string it gives back a structure with a function handle to
 %       calculate the feature.
@@ -28,19 +28,21 @@ for ii = 1:nMissingExperiments
             end
         case 3
             currentExperimentStatus = sprintf('\n(%0.1f%% Experiments done) current experiment status: ',   ...
-                                               100*ii/nMissingExperiments);                                
+                100*ii/nMissingExperiments);
         otherwise
             %Stay quiet
     end
     
     % Collect features
     if conf.verboseMode>=3, fprintf('%s Gathering Features ..',currentExperimentStatus); end
+    % We get our feature vector below
     features = generateFeatureDescriptor(conf.dataSamples,conf.experiment(experimentIdx));
     if conf.verboseMode>=3, fprintf('.. ok'); end
     
     % Running CrossValidation
     if conf.verboseMode>=3, fprintf('%s Running CrossValidation ..',currentExperimentStatus); end
     currentExperimentDataModelConfiguration = conf.dataModelConfig.(conf.experiment(experimentIdx).dataModel);
+    % I might have to add in the function below for knn
     estimatedClass = runCrossValidation(features,currentExperimentDataModelConfiguration,conf.verboseMode);
     if conf.verboseMode>=3, fprintf('.. ok'); end
     
@@ -51,14 +53,27 @@ end
 end
 
 function estimatedClass = runCrossValidation(features,dataModelConfig,verboseMode)
-    % TODO: this only works with balanced datasets
+% TODO: this only works with balanced datasets
 switch lower(dataModelConfig.type)
-    case 'svm'
-        trainFunction = @generateSVMModel;
-        getClassEstimation = @testSVMmodel;
+    % Below I have to add a case for knn
+        case 'svm'
+            trainFunction = @generateSVMModel;
+            getClassEstimation = @testSVMmodel;
+    
+%     case 'knn'
+%         trainFunction = @knn_classification_model;
+%         getClassEstimation = @knn_test_model;
+
+%     case 'tree'
+%         trainFunction = @tree_classification_model;
+%         getClassEstimation = @tree_test_model;
+        
+%     case 'naivebayes'
+%         trainFunction = @NBayes_classification_model;
+%         getClassEstimation = @Nbayes_test_model;
     otherwise
         error('woodTestClassificaitonTest:runCrossValidtaion','%s unkown dataModel type',dataModelConfig.type);
-
+        
 end
 
 % TODO: this only works with balanced datasets
@@ -68,13 +83,15 @@ numberOfFolds = size(features,1);
 trainLabels = meshgrid(1:size(features,2),1:(numberOfFolds-1));
 for foldId  = 1:numberOfFolds
     showProgress;
-
+    
     % Generate the datasets
     roundTrainFeatures = features(setxor(foldId,1:numberOfFolds),:);
     roundTestFeatures  = features(foldId,:);
     
     % Train
-    trainFeat_rowSamples_colFeat = cell2mat(roundTrainFeatures(:));   
+    % Here the folowing variable "trainFeat_rowSamples_colFeat" show the
+    % actual data that is being passed to the classifier
+    trainFeat_rowSamples_colFeat = cell2mat(roundTrainFeatures(:));
     currentTrainedModel = trainFunction(trainFeat_rowSamples_colFeat,trainLabels(:),dataModelConfig);
     
     % Test
@@ -112,10 +129,10 @@ switch(conf.solver)
         for currentClass = unique(label)'
             y = 2 * (label == currentClass) - 1 ; % set them one class vs others (1 vs -1)
             [w(:,currentClass) b(currentClass) info] = vl_svmtrain( data',y', lambda, ...
-                                                                    'Solver', conf.solver, ...
-                                                                    'MaxNumIterations', 50/lambda, ...
-                                                                    'BiasMultiplier', conf.biasMultiplier, ...
-                                                                    'Epsilon', 1e-3);
+                'Solver', conf.solver, ...
+                'MaxNumIterations', 50/lambda, ...
+                'BiasMultiplier', conf.biasMultiplier, ...
+                'Epsilon', 1e-3);
         end
         
     otherwise
@@ -148,23 +165,23 @@ end
 
 function dataCollection = collectFeature(imgIdList,featureDescriptionStr)
 global calcPoolDir
-    % Recover the current Feature configuration
-    [featureName, featureParamStr] = strtok(featureDescriptionStr,' ');
-    featureName = cell2mat(featureName);
-    featureParamStr = cell2mat(featureParamStr);
-    featureParameters = featureDescription2struct(featureParamStr(2:end));
+% Recover the current Feature configuration
+[featureName, featureParamStr] = strtok(featureDescriptionStr,' ');
+featureName = cell2mat(featureName);
+featureParamStr = cell2mat(featureParamStr);
+featureParameters = featureDescription2struct(featureParamStr(2:end));
 
-    % Set the feature Store point
-    featureRelativePath = getRelativePathWorkAround(featureName,featureParameters);
-    featureParameters.dataStoragePath= fullfile( calcPoolDir, featureRelativePath);
-    
-    dataCollection = cell(length(imgIdList),1);
-    for ii=1:length(imgIdList)
-        currentImgFeatCalculationFile = fullfile(featureParameters.dataStoragePath,sprintf('%s.mat',imgIdList{ii}));
-        load(currentImgFeatCalculationFile,'data');
-        dataCollection{ii} = data;
-    end
-    
+% Set the feature Store point
+featureRelativePath = getRelativePathWorkAround(featureName,featureParameters);
+featureParameters.dataStoragePath= fullfile( calcPoolDir, featureRelativePath);
+
+dataCollection = cell(length(imgIdList),1);
+for ii=1:length(imgIdList)
+    currentImgFeatCalculationFile = fullfile(featureParameters.dataStoragePath,sprintf('%s.mat',imgIdList{ii}));
+    load(currentImgFeatCalculationFile,'data');
+    dataCollection{ii} = data;
+end
+
     function featureRelativePath = getRelativePathWorkAround(featureName,featureParameters)
         if isfield(featureParameters,'stats')
             featureRelativePath = getRelativePath([featureName 'Statistic'],featureParameters);
